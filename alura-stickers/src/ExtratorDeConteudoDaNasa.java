@@ -6,8 +6,8 @@ public class ExtratorDeConteudoDaNasa implements ExtratorDeConteudo {
 
     public List<Conteudo> extraiConteudos(String json) {
 
-        // Extrair dados exatos (titulo, poster, classificao)
-        JsonParser parser = new JsonParser();
+        // Extrair dados
+        var parser = new JsonParser();
         List<Map<String, String>> listaDeAtributos = parser.parse(json);
 
         List<Conteudo> conteudos = new ArrayList<>();

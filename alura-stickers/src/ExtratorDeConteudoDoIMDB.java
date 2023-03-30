@@ -6,7 +6,7 @@ public class ExtratorDeConteudoDoIMDB implements ExtratorDeConteudo{
 
     public List<Conteudo> extraiConteudos(String json) {
 
-        // Extrair dados exatos (titulo, poster, classificao)
+        // Extrair dados
         var parser = new JsonParser();
         List<Map<String, String>> listaDeAtributos = parser.parse(json);
 
