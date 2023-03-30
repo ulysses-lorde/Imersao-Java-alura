@@ -1,12 +1,6 @@
 import java.io.InputStream;
-import java.net.URI;
 import java.net.URL;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
-import java.net.http.HttpResponse.BodyHandlers;
 import java.util.List;
-import java.util.Map;
 
 public class App {
     public static void main(String[] args) throws Exception {
@@ -14,48 +8,37 @@ public class App {
         //String variavelAmbiente = System.getenv("VAR_AMBIENTE");
         
         // Fazer conexão HTTP e requisitar os dados do json
-        String url = "https://raw.githubusercontent.com/alura-cursos/imersao-java-2-api/main/TopMovies.json";
-        URI endereco = URI.create(url);
-        //var client = HttpClient.newHttpClient();
-        HttpClient client = HttpClient.newHttpClient();
-        HttpRequest request = HttpRequest.newBuilder(endereco).GET().build();
-        HttpResponse<String> response = client.send(request, BodyHandlers.ofString());
-        String body = response.body();
-        
-        // Extrair dados exatos (titulo, poster, classificao)
-        JsonParser parser = new JsonParser();
-        List<Map<String, String>> listaDeFilmes = parser.parse(body);
-        //System.out.println(listaDeFilmes.get(0));
+        // IMDB
+        //String url = "https://raw.githubusercontent.com/alura-cursos/imersao-java-2-api/main/TopMovies.json";
+        //ExtratorDeConteudo extrator = new ExtratorDeConteudoDoIMDB();
+        //NASA
+        String url = "https://api.nasa.gov/planetary/apod?api_key=DEMO_KEY&start_date=2022-06-12&end_date=2022-06-14";
+        ExtratorDeConteudo extrator = new ExtratorDeConteudoDaNasa();
+
+        var http = new ClienteHttp();
+        String json = http.buscaDados(url);
+
+
 
         // Exibir e manipular os dados
-        var geradora = new GeradoraDeStickers();
-        for (Map<String,String> filme : listaDeFilmes) {
-            String rank = filme.get("rank");
-            String title = filme.get("title");
-            String rating = filme.get("imDbRating");
-            String urlImagem = filme.get("image");
+        List<Conteudo> conteudos = extrator.extraiConteudos(json);
+
+        var geradora = new GeradoraDeFigurinhas();
+
+        for (int i = 0; i < 2; i++) {
+
+            Conteudo conteudo = conteudos.get(i);
 
             // Pega a imagem e gera uma figurinha
-            InputStream inputStream = new URL(urlImagem).openStream();
-            String nomeArquivo = "saida/" + title + ".png";
+            InputStream inputStream = new URL(conteudo.getUrlImagem()).openStream();
+            String nomeArquivo = "saida/" + conteudo.getTitulo() + ".png";
+            String fraseDaFigurinha = conteudo.getTitulo();
 
-            geradora.cria(inputStream, nomeArquivo);
+            geradora.cria(inputStream, nomeArquivo, fraseDaFigurinha);
 
-            /*Transformar a nota em float e 
-            arredondar para o menor inteiro*/  
-            double ratingFloat = Double.parseDouble(rating);
-            var ratinground = Math.round(ratingFloat - 0.5);
+            System.out.println(conteudo.getTitulo());
             
-            /*Exibir (rank, title e rating)*/
-            System.out.println("\u001b[1mRank: \u001b[m" + rank + " - " + "\u001b[1mTítulo: \u001b[m" + title);
-            System.out.println("\u001b[1mNota: \u001b[m" + ratingFloat);
-            
-            /**/
-            for (int n = 1; n <= ratinground; n++) {
-                System.out.print("⭐");
-            }
-            
-            System.out.println("\n");
+            System.out.println();
         }
     }
 }
