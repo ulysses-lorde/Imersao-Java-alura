@@ -30,6 +30,7 @@ public class JsonParser {
                     String atributo = matcherAtributosJson.group(1);
                     String valor = matcherAtributosJson.group(2);
                     atributosItem.put(atributo, valor);
+                    System.out.println(atrinbuto + valor);
                 }
 
                 dados.add(atributosItem);
